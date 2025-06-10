@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Diagrams - Sistem Manajemen Bisnis</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .hero-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .diagram-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .diagram-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .step-box {
+            background: var(--primary-gradient);
+            color: white;
+            border-radius: 15px;
+            padding: 1rem;
+            margin: 0.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .step-box:hover::before {
+            left: 100%;
+        }
+
+        .step-box:hover {
+            transform: scale(1.05);
+        }
+
+        .step-system {
+            background: var(--success-gradient);
+        }
+
+        .step-admin {
+            background: var(--secondary-gradient);
+        }
+
+        .step-warehouse {
+            background: var(--warning-gradient);
+            color: #333;
+        }
+
+        .step-owner {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+        }
+
+        .decision-box {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+            color: #333;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 1rem auto;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .decision-box:hover {
+            transform: rotate(5deg) scale(1.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .end-box {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+            color: white;
+            border-radius: 25px;
+            padding: 0.8rem 1.5rem;
+            margin: 1rem auto;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            max-width: 150px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); }
+            50% { box-shadow: 0 6px 25px rgba(253, 121, 168, 0.4); }
+            100% { box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); }
+        }
+
+        .flow-arrow {
+            text-align: center;
+            font-size: 2rem;
+            color: #667eea;
+            margin: 0.5rem 0;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .branch-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .branch {
+            flex: 1;
+            max-width: 300px;
+            margin: 0 1rem;
+        }
+
+        .branch-label {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .branch-label.no {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+        }
+
+        .legend {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 0.8rem 0;
+            padding: 0.5rem;
+            border-radius: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .legend-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 20px;
+            border-radius: 5px;
+            margin-right: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .fade-in {
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: white !important;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+        }
+
+        @media (max-width: 768px) {
+            .branch-container {
+                flex-direction: column;
+            }
+            .branch {
+                max-width: 100%;
+                margin: 1rem 0;
+            }
+            .hero-section {
+                padding: 2rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="fas fa-chart-line me-2"></i>M Alif fadlan</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#diagram1">Pengelolaan Pesanan</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#diagram2">Peninjauan Kinerja</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#legend">Keterangan</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero-section text-center text-white fade-in">
+            <h1 class="display-4 fw-bold mb-4">
+                <i class="fas fa-project-diagram me-3"></i>
+                 Use Case dan Activity Diagram
+            </h1>
+            <p class="lead mb-4"> Tahap-tahap Pembuatan Use Case Diagram</p>
+            <div class="row">
+                <div class="col-md-4">
+                    <i class="fas fa-shopping-cart fa-3x mb-3"></i>
+                    <h5>Pengelolaan Pesanan</h5>
+                </div>
+                <div class="col-md-4">
+                    <i class="fas fa-chart-bar fa-3x mb-3"></i>
+                    <h5>Analisis Kinerja</h5>
+                </div>
+                <div class="col-md-4">
+                    <i class="fas fa-cogs fa-3x mb-3"></i>
+                    <h5>Otomatisasi Proses</h5>
+                </div>
+            </div>
+        </div>
+
+        <!-- Diagram 1 -->
+        <div id="diagram1" class="diagram-card fade-in">
+            <h2 class="text-center mb-4">
+                <i class="fas fa-shopping-cart text-primary me-2"></i>
+                Activity Diagram 1: Proses Pengelolaan Pesanan oleh Admin
+            </h2>
+            
+            <div class="text-center">
+                <div class="step-box step-system">
+                    <i class="fas fa-server me-2"></i>Sistem: Menerima pesanan baru dari pembeli
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                
+                <div class="step-box step-system">
+                    <i class="fas fa-bell me-2"></i>Sistem: Mengirim notifikasi pesanan baru
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                
+                <div class="step-box step-admin">
+                    <i class="fas fa-sign-in-alt me-2"></i>Admin: Login ke sistem
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                
+                <div class="step-box step-admin">
+                    <i class="fas fa-list me-2"></i>Admin: Membuka daftar pesanan
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                
+                <div class="step-box step-admin">
+                    <i class="fas fa-credit-card me-2"></i>Admin: Memverifikasi pembayaran
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                
+                <div class="decision-box">
+                    <div>
+                        <i class="fas fa-question-circle mb-2"></i><br>
+                        Pembayaran Valid?
+                    </div>
+                </div>
+                
+                <div class="branch-container">
+                    <div class="branch">
+                        <div class="branch-label no">TIDAK VALID</div>
+                        <div class="step-box step-admin">
+                            <i class="fas fa-phone me-2"></i>Admin: Menghubungi pembeli atau membatalkan pesanan
+                        </div>
+                        <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                        <div class="end-box">
+                            <i class="fas fa-stop-circle me-2"></i>SELESAI
+                        </div>
+                    </div>
+                    
+                    <div class="branch">
+                        <div class="branch-label">VALID</div>
+                        <div class="step-box step-admin">
+                            <i class="fas fa-edit me-2"></i>Admin: Ubah status ke "Diproses"
+                        </div>
+                        <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                        
+                        <div class="step-box step-admin">
+                            <i class="fas fa-share me-2"></i>Admin: Teruskan ke Bagian Gudang
+                        </div>
+                        <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                        
+                        <div class="step-box step-warehouse">
+                            <i class="fas fa-box me-2"></i>Gudang: Siapkan & kemas produk
+                        </div>
+                        <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                        
+                        <div class="step-box step-warehouse">
+                            <i class="fas fa-shipping-fast me-2"></i>Gudang: Kirim barang
+                        </div>
+                        <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                        
+                        <div class="step-box step-admin">
+                            <i class="fas fa-check me-2"></i>Admin: Update status "Terkirim"
+                        </div>
+                        <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                        
+                        <div class="step-box step-admin">
+                            <i class="fas fa-hashtag me-2"></i>Admin: Input nomor resi
+                        </div>
+                        <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                        
+                        <div class="step-box step-system">
+                            <i class="fas fa-envelope me-2"></i>Sistem: Kirim notifikasi ke pembeli
+                        </div>
+                        <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                        
+                        <div class="end-box">
+                            <i class="fas fa-check-circle me-2"></i>SELESAI
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <div id="diagram2" class="diagram-card fade-in">
+            <h2 class="text-center mb-4">
+                <i class="fas fa-chart-line text-success me-2"></i>
+                Activity Diagram 2: Proses Peninjauan Kinerja oleh Owner
+            </h2>
+            
+            <div class="text-center">
+                <div class="step-box step-owner">
+                    <i class="fas fa-calendar-alt me-2"></i>Owner: Memulai siklus peninjauan
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                
+                <div class="step-box step-owner">
+                    <i class="fas fa-file-alt me-2"></i>Owner: Meminta laporan kinerja bisnis
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                
+                <div class="step-box step-system">
+                    <i class="fas fa-chart-bar me-2"></i>Sistem/Admin: Menyediakan laporan
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                
+                <div class="step-box step-owner">
+                    <i class="fas fa-search me-2"></i>Owner: Menganalisis laporan
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                
+                <div class="decision-box">
+                    <div>
+                        <i class="fas fa-balance-scale mb-2"></i><br>
+                        Kinerja sesuai target?
+                    </div>
+                </div>
+                
+                <div class="branch-container">
+                    <div class="branch">
+                        <div class="branch-label">YA</div>
+                        <div class="step-box step-owner">
+                            <i class="fas fa-thumbs-up me-2"></i>Owner: Pertahankan strategi saat ini
+                        </div>
+                        <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                        <div class="end-box">
+                            <i class="fas fa-check-circle me-2"></i>SELESAI
+                        </div>
+                    </div>
+                    
+                    <div class="branch">
+                        <div class="branch-label no">TIDAK</div>
+                        <div class="step-box step-owner">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Owner: Identifikasi masalah/peluang
+                        </div>
+                        <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                        
+                        <div class="step-box step-owner">
+                            <i class="fas fa-lightbulb me-2"></i>Owner: Rumuskan strategi baru
+                        </div>
+                        <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                        
+                        <div class="step-box step-owner">
+                            <i class="fas fa-users me-2"></i>Owner: Berikan arahan ke tim
+                        </div>
+                        <div class="flow-arrow"><i class="fas fa-arrow-down"></i></div>
+                        
+                        <div class="end-box">
+                            <i class="fas fa-flag-checkered me-2"></i>SELESAI
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Legend -->
+        <div id="legend" class="legend fade-in">
+            <h3 class="text-center mb-4">
+                <i class="fas fa-info-circle text-info me-2"></i>
+                Keterangan Diagram
+            </h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--success-gradient);"></div>
+                        <div>
+                            <strong>Sistem</strong><br>
+                            <small>Proses otomatis yang dilakukan sistem</small>
+                        </div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--secondary-gradient);"></div>
+                        <div>
+                            <strong>Admin</strong><br>
+                            <small>Aktivitas yang dilakukan oleh Admin</small>
+                        </div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: var(--warning-gradient);"></div>
+                        <div>
+                            <strong>Bagian Gudang</strong><br>
+                            <small>Proses packing dan pengiriman</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);"></div>
+                        <div>
+                            <strong>Owner</strong><br>
+                            <small>Keputusan strategis oleh Owner</small>
+                        </div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%); border-radius: 50%;"></div>
+                        <div>
+                            <strong>Decision Point</strong><br>
+                            <small>Titik pengambilan keputusan</small>
+                        </div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%); border-radius: 25px;"></div>
+                        <div>
+                            <strong>End Process</strong><br>
+                            <small>Titik akhir dari proses</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center text-white py-4">
+            <div class="container">
+                <p class="mb-0">
+                    <i class="fas fa-heart text-danger me-2"></i>
+               M Alif fadlan
+                </p>
+                <small class="opacity-75">Developed By</small>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Smooth scroll untuk navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Intersection Observer untuk animasi fade-in
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+    
+        document.querySelectorAll('.fade-in').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+
+        // Hover effect pada step boxes
+        document.querySelectorAll('.step-box').forEach(box => {
+            box.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05) rotate(1deg)';
+            });
+            
+            box.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1) rotate(0deg)';
+            });
+        });
+
+        // Parallax effect pada hero section
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const heroSection = document.querySelector('.hero-section');
+            if (heroSection) {
+                heroSection.style.transform = `translateY(${scrolled * 0.5}px)`;
+            }
+        });
+
+        // Dynamic navbar background
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 100) {
+                navbar.style.background = 'rgba(102, 126, 234, 0.9)';
+            } else {
+                navbar.style.background = 'rgba(255, 255, 255, 0.1)';
+            }
+        });
+    </script>
+</body>
+</html>
